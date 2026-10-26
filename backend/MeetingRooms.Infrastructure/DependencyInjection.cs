@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MeetingRooms.Core.Interfaces;
 using MeetingRooms.Infrastructure.Data;
 using MeetingRooms.Infrastructure.Repositories;
+using MeetingRooms.Infrastructure.Queries;
 
 namespace MeetingRooms.Infrastructure;
 
@@ -14,6 +15,7 @@ public static class DependencyInjection
     services.AddScoped<IRoomRepository, RoomRepository>();
     services.AddScoped<IReservationRepository, ReservationRepository>();
     services.AddScoped<IUserRepository, UserRepository>();
+    services.AddScoped<IUserQueries, UserQueries>();
     services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<AppDbContext>());
     return services;
   }

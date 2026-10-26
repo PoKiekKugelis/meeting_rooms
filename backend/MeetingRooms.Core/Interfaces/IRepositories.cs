@@ -1,12 +1,12 @@
 using MeetingRooms.Domain.Entities;
-using MeetingRooms.Core.DTOs;
+using MeetingRooms.Core.Queries;
 
 namespace MeetingRooms.Core.Interfaces;
 
 public interface IRoomRepository
 {
   Task<List<Room>> GetAllAsync(CancellationToken ct);
-  Task<List<Room>> GetFilteredAsync(RoomFilterDto filter, CancellationToken ct);
+  Task<List<Room>> GetFilteredAsync(RoomListQuery query, CancellationToken ct);
   Task<Room?> GetByIdAsync(int id, CancellationToken ct);
   void Add(Room room);
   void Delete(Room room);
@@ -15,7 +15,7 @@ public interface IRoomRepository
 public interface IReservationRepository
 {
   Task<List<Reservation>> GetAllAsync(CancellationToken ct);
-  Task<List<Reservation>> GetFilteredAsync(ReservationFilterDto filter, CancellationToken ct);
+  Task<List<Reservation>> GetFilteredAsync(ReservationListQuery query, CancellationToken ct);
   Task<Reservation?> GetByIdAsync(int id, CancellationToken ct);
   void Add(Reservation reservation);
   void Update(Reservation reservation);

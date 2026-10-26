@@ -18,17 +18,6 @@ public sealed class UserRepository(AppDbContext db) : IUserRepository
     return await db.Users.FirstOrDefaultAsync(x => x.Id == id, ct);
   }
 
-  public async Task<List<User>> GetAllWithActiveReservationsAsync(CancellationToken ct)
-  {
-    var now = DateTime.UtcNow;
-
-    return await db.Users
-        .AsNoTracking()
-        .Include(u => u.Reservations
-            .Where(r => r.Status == ReservationStatus.Booked && r.EndDate > now))
-        .ToListAsync(ct);
-  }
-
   public void Add(User user)
   {
     db.Users.Add(user);

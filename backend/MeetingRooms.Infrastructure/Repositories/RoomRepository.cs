@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MeetingRooms.Core.Interfaces;
 using MeetingRooms.Domain.Entities;
 using MeetingRooms.Infrastructure.Data;
-using MeetingRooms.Core.DTOs;
+using MeetingRooms.Core.Queries;
 
 namespace MeetingRooms.Infrastructure.Repositories;
 
@@ -14,35 +14,36 @@ public sealed class RoomRepository(AppDbContext db) : IRoomRepository
     return await db.Rooms.AsNoTracking().OrderBy(x => x.Id).ToListAsync(ct);
   }
 
-  public async Task<List<Room>> GetFilteredAsync(RoomFilterDto? filter, CancellationToken ct)
+  public async Task<List<Room>> GetFilteredAsync(RoomListQuery criteria, CancellationToken ct)
   {
-    IQueryable<Room> query = db.Rooms
+    IQueryable<Room> rooms = db.Rooms
         .AsNoTracking()
-        .Include(x => x.Equipment)
-        .Where(x => x.Status == RoomStatus.Active);
+        .Include(x => x.Equipment);
 
-    if (filter != null)
+    if (!criteria.IncludeInactive)
     {
-      if (filter.MinCapacity.HasValue)
-      {
-        query = query.Where(x => x.Capacity >= filter.MinCapacity.Value);
-      }
+      rooms = rooms.Where(x => x.Status == RoomStatus.Active);
+    }
 
-      if (!string.IsNullOrWhiteSpace(filter.Floor))
-      {
-        query = query.Where(x => x.Location == filter.Floor);
-      }
+    if (criteria.MinimumCapacity.HasValue)
+    {
+      rooms = rooms.Where(x => x.Capacity >= criteria.MinimumCapacity.Value);
+    }
 
-      if (filter.Equipment is not null && filter.Equipment.Count > 0)
+    if (!string.IsNullOrWhiteSpace(criteria.Floor))
+    {
+      rooms = rooms.Where(x => x.Location == criteria.Floor);
+    }
+
+    if (criteria.Equipment is { Count: > 0 })
+    {
+      foreach (var equipmentName in criteria.Equipment)
       {
-        foreach (var equipmentName in filter.Equipment)
-        {
-          query = query.Where(x => x.Equipment.Any(x => x.Equipment.Name == equipmentName));
-        }
+        rooms = rooms.Where(x => x.Equipment.Any(e => e.Equipment.Name == equipmentName));
       }
     }
 
-    return await query
+    return await rooms
         .OrderBy(x => x.Name)
         .ToListAsync(ct);
   }

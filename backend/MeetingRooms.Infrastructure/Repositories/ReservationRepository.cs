@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MeetingRooms.Core.Interfaces;
 using MeetingRooms.Domain.Entities;
 using MeetingRooms.Infrastructure.Data;
-using MeetingRooms.Core.DTOs;
+using MeetingRooms.Core.Queries;
 
 namespace MeetingRooms.Infrastructure.Repositories;
 
@@ -14,42 +14,39 @@ public sealed class ReservationRepository(AppDbContext db) : IReservationReposit
     return await db.Reservations.AsNoTracking().OrderBy(x => x.Id).ToListAsync(ct);
   }
 
-  public async Task<List<Reservation>> GetFilteredAsync(ReservationFilterDto? filter, CancellationToken ct)
+  public async Task<List<Reservation>> GetFilteredAsync(ReservationListQuery criteria, CancellationToken ct)
   {
-    IQueryable<Reservation> query = db.Reservations
+    IQueryable<Reservation> reservations = db.Reservations
         .AsNoTracking()
         .Include(x => x.User)
         .Include(x => x.Room);
 
-    if (filter != null)
+    if (criteria.RoomId.HasValue)
     {
-      if (filter.RoomId.HasValue)
-      {
-        query = query.Where(x => x.RoomId == filter.RoomId);
-      }
-
-      if (filter.UserId.HasValue)
-      {
-        query = query.Where(x => x.UserId == filter.UserId);
-      }
-
-      if (!string.IsNullOrWhiteSpace(filter.Status) && Enum.TryParse<ReservationStatus>(filter.Status, true, out var status))
-      {
-        query = query.Where(x => x.Status == status);
-      }
-
-      if (filter.From.HasValue)
-      {
-        query = query.Where(x => x.EndDate > filter.From.Value);
-      }
-
-      if (filter.To.HasValue)
-      {
-        query = query.Where(x => x.StartDate < filter.To.Value);
-      }
+      reservations = reservations.Where(x => x.RoomId == criteria.RoomId.Value);
     }
 
-    return await query
+    if (criteria.UserId.HasValue)
+    {
+      reservations = reservations.Where(x => x.UserId == criteria.UserId.Value);
+    }
+
+    if (criteria.Status.HasValue)
+    {
+      reservations = reservations.Where(x => x.Status == criteria.Status.Value);
+    }
+
+    if (criteria.From.HasValue)
+    {
+      reservations = reservations.Where(x => x.EndDate > criteria.From.Value.UtcDateTime);
+    }
+
+    if (criteria.To.HasValue)
+    {
+      reservations = reservations.Where(x => x.StartDate < criteria.To.Value.UtcDateTime);
+    }
+
+    return await reservations
         .OrderBy(r => r.StartDate)
         .ToListAsync(ct);
   }
