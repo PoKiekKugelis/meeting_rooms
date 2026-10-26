@@ -12,5 +12,4 @@ public sealed record RoomDto(
 public sealed record CreateRoomDto(
     string Name,
     int Capacity,
-    string Location,
-    IReadOnlyCollection<string> Equipment);
+    string Location);

@@ -53,7 +53,10 @@ public sealed class ReservationRepository(AppDbContext db) : IReservationReposit
 
   public async Task<Reservation?> GetByIdAsync(int id, CancellationToken ct)
   {
-    return await db.Reservations.FirstOrDefaultAsync(x => x.Id == id, ct);
+    return await db.Reservations
+        .Include(reservation => reservation.User)
+        .Include(reservation => reservation.Room)
+        .FirstOrDefaultAsync(reservation => reservation.Id == id, ct);
   }
 
   public void Add(Reservation reservation)

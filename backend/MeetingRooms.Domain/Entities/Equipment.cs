@@ -1,8 +1,21 @@
+using MeetingRooms.Domain.Common;
+
 namespace MeetingRooms.Domain.Entities;
 
 public class Equipment
 {
-  public int Id { set; get; }
-  public string Name { get; set; } = string.Empty;
-  public ICollection<RoomEquipment> Rooms { get; set; } = [];
+  public const int MaxNameLength = 100;
+
+  private Equipment()
+  {
+  }
+
+  public Equipment(string name)
+  {
+    Name = DomainGuard.NormalizeRequiredText(name, MaxNameLength, nameof(name));
+  }
+
+  public int Id { get; private set; }
+  public string Name { get; private set; } = string.Empty;
+  public ICollection<RoomEquipment> Rooms { get; private set; } = [];
 }

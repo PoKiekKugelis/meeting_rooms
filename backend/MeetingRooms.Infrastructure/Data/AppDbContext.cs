@@ -22,11 +22,11 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
 
       entity.Property(r => r.Name)
               .IsRequired()
-              .HasMaxLength(100);
+              .HasMaxLength(Room.MaxNameLength);
 
       entity.Property(r => r.Location)
               .IsRequired()
-              .HasMaxLength(150);
+              .HasMaxLength(Room.MaxLocationLength);
 
       entity.HasMany(r => r.Reservations)
               .WithOne(res => res.Room)
@@ -40,11 +40,11 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
 
       entity.Property(u => u.FirstName)
               .IsRequired()
-              .HasMaxLength(100);
+              .HasMaxLength(User.MaxNameLength);
 
       entity.Property(u => u.LastName)
               .IsRequired()
-              .HasMaxLength(100);
+              .HasMaxLength(User.MaxNameLength);
 
       entity.HasMany(u => u.Reservations)
               .WithOne(res => res.User)
@@ -58,7 +58,15 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
 
       entity.Property(r => r.ReservationTitle)
               .IsRequired()
-              .HasMaxLength(200);
+              .HasMaxLength(Reservation.MaxTitleLength);
+    });
+
+    modelBuilder.Entity<Equipment>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.Property(e => e.Name)
+          .IsRequired()
+          .HasMaxLength(Equipment.MaxNameLength);
     });
 
     modelBuilder.Entity<RoomEquipment>(entity =>

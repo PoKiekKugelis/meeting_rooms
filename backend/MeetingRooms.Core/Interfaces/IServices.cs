@@ -6,21 +6,22 @@ namespace MeetingRooms.Core.Interfaces;
 
 public interface IRoomService
 {
-  Task<List<RoomDto>> GetAllAsync(RoomListQuery? query, CancellationToken ct);
+  Task<List<RoomDto>> GetAllAsync(RoomListQuery query, CancellationToken ct);
   Task<Result<RoomDto>> GetByIdAsync(int id, CancellationToken ct);
-  Task<RoomDto> CreateAsync(CreateRoomDto request, CancellationToken ct);
+  Task<Result<RoomDto>> CreateAsync(CreateRoomDto request, CancellationToken ct);
   Task<bool> DeleteAsync(int id, CancellationToken ct);
 }
 public interface IReservationService
 {
-  Task<List<ReservationDto>> GetAllAsync(ReservationListQuery? query, CancellationToken ct);
+  Task<List<ReservationDto>> GetAllAsync(ReservationListQuery query, CancellationToken ct);
   Task<Result<ReservationDto>> GetByIdAsync(int id, CancellationToken ct);
   Task<Result<ReservationDto>> CreateAsync(CreateReservationDto request, CancellationToken ct);
-  Task<Result<bool>> DeleteAsync(int id, CancellationToken ct);
+  Task<Result<bool>> CancelAsync(int id, CancellationToken ct);
 }
 public interface IUserService
 {
   Task<List<UserDto>> GetAllAsync(CancellationToken ct);
+  Task<List<UserViewDto>> GetAllViewAsync(CancellationToken ct);
   Task<Result<UserDto>> GetByIdAsync(int id, CancellationToken ct);
   Task<Result<UserDto>> CreateAsync(CreateUserDto request, CancellationToken ct);
   Task<Result<bool>> DeleteAsync(int id, CancellationToken ct);

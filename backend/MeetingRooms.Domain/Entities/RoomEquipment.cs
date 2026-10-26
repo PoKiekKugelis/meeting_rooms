@@ -1,14 +1,28 @@
+using MeetingRooms.Domain.Common;
+
 namespace MeetingRooms.Domain.Entities;
 
 public class RoomEquipment
 {
-  public int RoomId { get; set; }
+  private RoomEquipment()
+  {
+  }
 
-  public Room Room { get; set; } = null!;
+  public RoomEquipment(Room room, Equipment equipment, int quantity = 1)
+  {
+    ArgumentNullException.ThrowIfNull(room);
+    ArgumentNullException.ThrowIfNull(equipment);
 
-  public int EquipmentId { get; set; }
+    Room = room;
+    RoomId = room.Id;
+    Equipment = equipment;
+    EquipmentId = equipment.Id;
+    Quantity = DomainGuard.EnsureInRange(quantity, 1, int.MaxValue, nameof(quantity));
+  }
 
-  public Equipment Equipment { get; set; } = null!;
-
-  public int Quantity { get; set; }
+  public int RoomId { get; private set; }
+  public Room Room { get; private set; } = null!;
+  public int EquipmentId { get; private set; }
+  public Equipment Equipment { get; private set; } = null!;
+  public int Quantity { get; private set; }
 }
