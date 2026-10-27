@@ -38,12 +38,12 @@ public sealed class ReservationRepository(AppDbContext db) : IReservationReposit
 
     if (criteria.From.HasValue)
     {
-      reservations = reservations.Where(x => x.EndDate > criteria.From.Value.UtcDateTime);
+      reservations = reservations.Where(x => x.EndDate > criteria.From.Value);
     }
 
     if (criteria.To.HasValue)
     {
-      reservations = reservations.Where(x => x.StartDate < criteria.To.Value.UtcDateTime);
+      reservations = reservations.Where(x => x.StartDate < criteria.To.Value);
     }
 
     return await reservations
@@ -57,6 +57,38 @@ public sealed class ReservationRepository(AppDbContext db) : IReservationReposit
         .Include(reservation => reservation.User)
         .Include(reservation => reservation.Room)
         .FirstOrDefaultAsync(reservation => reservation.Id == id, ct);
+  }
+
+  public Task<bool> HasRoomOverlapAsync(
+      int roomId,
+      DateTime startDate,
+      DateTime endDate,
+      int? excludedReservationId,
+      CancellationToken ct)
+  {
+    return db.Reservations.AsNoTracking().AnyAsync(reservation =>
+        reservation.RoomId == roomId &&
+        reservation.Status == ReservationStatus.Booked &&
+        (!excludedReservationId.HasValue || reservation.Id != excludedReservationId.Value) &&
+        reservation.StartDate < endDate &&
+        reservation.EndDate > startDate,
+        ct);
+  }
+
+  public Task<bool> HasOrganizerOverlapAsync(
+      int userId,
+      DateTime startDate,
+      DateTime endDate,
+      int? excludedReservationId,
+      CancellationToken ct)
+  {
+    return db.Reservations.AsNoTracking().AnyAsync(reservation =>
+        reservation.UserId == userId &&
+        reservation.Status == ReservationStatus.Booked &&
+        (!excludedReservationId.HasValue || reservation.Id != excludedReservationId.Value) &&
+        reservation.StartDate < endDate &&
+        reservation.EndDate > startDate,
+        ct);
   }
 
   public void Add(Reservation reservation)
