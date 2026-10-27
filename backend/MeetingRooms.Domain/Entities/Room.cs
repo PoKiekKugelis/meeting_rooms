@@ -26,4 +26,8 @@ public class Room
   public RoomStatus Status { get; private set; } = RoomStatus.Active;
   public ICollection<RoomEquipment> Equipment { get; private set; } = [];
   public ICollection<Reservation> Reservations { get; private set; } = [];
+
+  public void Deactivate() => Status = RoomStatus.Inactive;
+
+  public void Activate() => Status = RoomStatus.Active;
 }
