@@ -6,5 +6,5 @@ public sealed record ReservationListQuery(
     int? RoomId,
     int? UserId,
     ReservationStatus? Status,
-    DateTimeOffset? From,
-    DateTimeOffset? To);
+    DateTime? From,
+    DateTime? To);

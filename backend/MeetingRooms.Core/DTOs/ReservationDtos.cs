@@ -12,11 +12,9 @@ public sealed record ReservationDto(
     int AttendeeCount,
     string Status);
 
-public sealed record CreateReservationDto(
+public sealed record ReservationRequest(
     int RoomId,
-    string RoomName,
     int UserId,
-    string UserName,
     string Title,
     DateTime StartDate,
     DateTime EndDate,

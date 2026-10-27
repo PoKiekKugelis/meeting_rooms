@@ -18,29 +18,8 @@ public class Reservation
       Room room,
       User user)
   {
-    ArgumentNullException.ThrowIfNull(room);
-    ArgumentNullException.ThrowIfNull(user);
-
-    ReservationTitle = DomainGuard.NormalizeRequiredText(title, MaxTitleLength, nameof(title));
-    if (startDate >= endDate)
-    {
-      throw new ArgumentException("Reservation end must be after its start.", nameof(endDate));
-    }
-
-    AttendeeCount = DomainGuard.EnsureInRange(attendeeCount, 1, room.Capacity, nameof(attendeeCount));
-
-    if (room.Status != RoomStatus.Active)
-    {
-      throw new ArgumentException("Inactive rooms cannot be reserved.", nameof(room));
-    }
-
-    StartDate = startDate;
-    EndDate = endDate;
-    Room = room;
-    RoomId = room.Id;
-    User = user;
-    UserId = user.Id;
     Status = ReservationStatus.Booked;
+    SetDetails(title, startDate, endDate, attendeeCount, room, user);
   }
 
   public int Id { get; private set; }
@@ -54,8 +33,22 @@ public class Reservation
   public User User { get; private set; } = null!;
   public Room Room { get; private set; } = null!;
 
-  /// <summary>Cancels a booked reservation.</summary>
-  /// <exception cref="InvalidOperationException">The reservation is not booked.</exception>
+  public void UpdateDetails(
+      string title,
+      DateTime startDate,
+      DateTime endDate,
+      int attendeeCount,
+      Room room,
+      User user)
+  {
+    if (Status != ReservationStatus.Booked)
+    {
+      throw new InvalidOperationException("Only booked reservations can be edited.");
+    }
+
+    SetDetails(title, startDate, endDate, attendeeCount, room, user);
+  }
+
   public void Cancel()
   {
     if (Status != ReservationStatus.Booked)
@@ -64,5 +57,41 @@ public class Reservation
     }
 
     Status = ReservationStatus.Cancelled;
+  }
+
+  private void SetDetails(
+      string title,
+      DateTime startDate,
+      DateTime endDate,
+      int attendeeCount,
+      Room room,
+      User user)
+  {
+    ArgumentNullException.ThrowIfNull(room);
+    ArgumentNullException.ThrowIfNull(user);
+
+    startDate = DateTimeUtc.Normalize(startDate);
+    endDate = DateTimeUtc.Normalize(endDate);
+
+    var normalizedTitle = DomainGuard.NormalizeRequiredText(title, MaxTitleLength, nameof(title));
+    if (startDate >= endDate)
+    {
+      throw new ArgumentException("Reservation end must be after its start.", nameof(endDate));
+    }
+
+    var normalizedAttendeeCount = DomainGuard.EnsureInRange(attendeeCount, 1, room.Capacity, nameof(attendeeCount));
+    if (room.Status != RoomStatus.Active)
+    {
+      throw new ArgumentException("Inactive rooms cannot be reserved.", nameof(room));
+    }
+
+    ReservationTitle = normalizedTitle;
+    StartDate = startDate;
+    EndDate = endDate;
+    AttendeeCount = normalizedAttendeeCount;
+    Room = room;
+    RoomId = room.Id;
+    User = user;
+    UserId = user.Id;
   }
 }
