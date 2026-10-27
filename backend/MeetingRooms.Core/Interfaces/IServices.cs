@@ -15,7 +15,8 @@ public interface IReservationService
 {
   Task<List<ReservationDto>> GetAllAsync(ReservationListQuery query, CancellationToken ct);
   Task<Result<ReservationDto>> GetByIdAsync(int id, CancellationToken ct);
-  Task<Result<ReservationDto>> CreateAsync(CreateReservationDto request, CancellationToken ct);
+  Task<Result<ReservationDto>> CreateAsync(ReservationRequest request, CancellationToken ct);
+  Task<Result<ReservationDto>> UpdateAsync(int id, ReservationRequest request, CancellationToken ct);
   Task<Result<bool>> CancelAsync(int id, CancellationToken ct);
 }
 public interface IUserService
