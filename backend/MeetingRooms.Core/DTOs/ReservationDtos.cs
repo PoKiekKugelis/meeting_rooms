@@ -10,7 +10,8 @@ public sealed record ReservationDto(
     DateTime StartDate,
     DateTime EndDate,
     int AttendeeCount,
-    string Status);
+    string Status,
+    DateTime? CompletedAt);
 
 public sealed record ReservationRequest(
     int RoomId,

@@ -27,6 +27,7 @@ public class Reservation
   public int AttendeeCount { get; private set; }
   public DateTime EndDate { get; private set; }
   public DateTime StartDate { get; private set; }
+  public DateTime? CompletedAt { get; private set; }
   public ReservationStatus Status { get; private set; } = ReservationStatus.Booked;
   public int RoomId { get; private set; }
   public int UserId { get; private set; }
@@ -49,14 +50,37 @@ public class Reservation
     SetDetails(title, startDate, endDate, attendeeCount, room, user);
   }
 
-  public void Cancel()
+  public void Cancel(DateTime now)
   {
     if (Status != ReservationStatus.Booked)
     {
       throw new InvalidOperationException("Only booked reservations can be cancelled.");
     }
 
+    now = DateTimeUtc.Normalize(now);
+    if (now >= EndDate)
+    {
+      throw new InvalidOperationException("Reservations that have ended cannot be cancelled.");
+    }
+
     Status = ReservationStatus.Cancelled;
+  }
+
+  public void Complete(DateTime completedAt)
+  {
+    if (Status != ReservationStatus.Booked)
+    {
+      throw new InvalidOperationException("Only booked reservations can be completed.");
+    }
+
+    completedAt = DateTimeUtc.Normalize(completedAt);
+    if (completedAt < StartDate)
+    {
+      throw new InvalidOperationException("A reservation cannot be completed before it starts.");
+    }
+
+    Status = ReservationStatus.Completed;
+    CompletedAt = completedAt > EndDate ? EndDate : completedAt;
   }
 
   private void SetDetails(

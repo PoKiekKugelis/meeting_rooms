@@ -16,7 +16,8 @@ public sealed class ReservationService(
     IReservationRepository reservationRepository,
     IRoomRepository roomRepository,
     IUserRepository userRepository,
-    IUnitOfWork unitOfWork) : IReservationService
+    IUnitOfWork unitOfWork,
+    TimeProvider clock) : IReservationService
 {
   public async Task<List<ReservationDto>> GetAllAsync(ReservationListQuery query, CancellationToken ct)
   {
@@ -124,6 +125,13 @@ public sealed class ReservationService(
             BookingErrorCodes.ReservationNotEditable);
       }
 
+      if (clock.GetUtcNow().UtcDateTime >= reservation.EndDate)
+      {
+        return Result<ReservationDto>.Failure(
+            "Reservations that have ended cannot be edited.",
+            BookingErrorCodes.ReservationNotEditable);
+      }
+
       var room = await roomRepository.GetByIdAsync(request.RoomId, token);
       var user = await userRepository.GetByIdAsync(request.UserId, token);
 
@@ -150,7 +158,6 @@ public sealed class ReservationService(
             room!,
             user!);
 
-        reservationRepository.Update(reservation);
         await unitOfWork.SaveChangesAsync(token);
 
         return Result<ReservationDto>.Success(mapper.Map<ReservationDto>(reservation));
@@ -189,11 +196,68 @@ public sealed class ReservationService(
             BookingErrorCodes.ReservationNotEditable);
       }
 
-      reservation.Cancel();
-      reservationRepository.Update(reservation);
+      try
+      {
+        reservation.Cancel(clock.GetUtcNow().UtcDateTime);
+      }
+      catch (InvalidOperationException exception)
+      {
+        return Result<bool>.Failure(exception.Message, BookingErrorCodes.ReservationNotEditable);
+      }
+
       await unitOfWork.SaveChangesAsync(ct);
 
       return Result<bool>.Success(true);
+    }, ct);
+  }
+
+  public async Task<Result<ReservationDto>> CompleteAsync(int id, CancellationToken ct)
+  {
+    return await unitOfWork.ExecuteInTransactionAsync(async token =>
+    {
+      var reservation = await reservationRepository.GetByIdAsync(id, token);
+      if (reservation is null)
+      {
+        return Result<ReservationDto>.Failure(
+            $"Reservation {id} was not found.",
+            BookingErrorCodes.ReservationNotFound);
+      }
+
+      try
+      {
+        reservation.Complete(clock.GetUtcNow().UtcDateTime);
+      }
+      catch (InvalidOperationException exception)
+      {
+        return Result<ReservationDto>.Failure(
+            exception.Message,
+            BookingErrorCodes.ReservationNotCompletable);
+      }
+
+      await unitOfWork.SaveChangesAsync(token);
+      return Result<ReservationDto>.Success(mapper.Map<ReservationDto>(reservation));
+    }, ct);
+  }
+
+  public async Task<int> CompleteExpiredAsync(DateTime now, CancellationToken ct)
+  {
+    now = DateTimeUtc.Normalize(now);
+
+    return await unitOfWork.ExecuteInTransactionAsync(async token =>
+    {
+      var expired = await reservationRepository.GetExpiredBookedAsync(now, token);
+      if (expired.Count == 0)
+      {
+        return 0;
+      }
+
+      foreach (var reservation in expired)
+      {
+        reservation.Complete(reservation.EndDate);
+      }
+
+      await unitOfWork.SaveChangesAsync(token);
+      return expired.Count;
     }, ct);
   }
 }

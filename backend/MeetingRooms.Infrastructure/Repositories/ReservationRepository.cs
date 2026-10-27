@@ -59,6 +59,16 @@ public sealed class ReservationRepository(AppDbContext db) : IReservationReposit
         .FirstOrDefaultAsync(reservation => reservation.Id == id, ct);
   }
 
+  public async Task<List<Reservation>> GetExpiredBookedAsync(DateTime now, CancellationToken ct)
+  {
+    return await db.Reservations
+        .Where(reservation =>
+            reservation.Status == ReservationStatus.Booked &&
+            reservation.EndDate <= now)
+        .OrderBy(reservation => reservation.EndDate)
+        .ToListAsync(ct);
+  }
+
   public Task<bool> HasRoomOverlapAsync(
       int roomId,
       DateTime startDate,

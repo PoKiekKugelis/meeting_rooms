@@ -24,6 +24,7 @@ public static class BookingErrorCodes
   public const string UserNotFound = "USER_NOT_FOUND";
   public const string ReservationNotFound = "RESERVATION_NOT_FOUND";
   public const string ReservationNotEditable = "RESERVATION_NOT_EDITABLE";
+  public const string ReservationNotCompletable = "RESERVATION_NOT_COMPLETABLE";
 
   // Fallbacks for domain-guard and unexpected business failures
   public const string ValidationError = "VALIDATION_ERROR";

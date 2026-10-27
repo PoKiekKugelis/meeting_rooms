@@ -18,6 +18,8 @@ public interface IReservationService
   Task<Result<ReservationDto>> CreateAsync(ReservationRequest request, CancellationToken ct);
   Task<Result<ReservationDto>> UpdateAsync(int id, ReservationRequest request, CancellationToken ct);
   Task<Result<bool>> CancelAsync(int id, CancellationToken ct);
+  Task<Result<ReservationDto>> CompleteAsync(int id, CancellationToken ct);
+  Task<int> CompleteExpiredAsync(DateTime now, CancellationToken ct);
 }
 public interface IUserService
 {

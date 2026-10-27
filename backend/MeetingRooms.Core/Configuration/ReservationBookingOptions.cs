@@ -4,7 +4,7 @@ public sealed class ReservationBookingOptions
 {
   public const string SectionName = "ReservationBooking";
 
-  public int MaximumDurationDays { get; set; }
+  public int MaximumDurationDays { get; set; } = 7;
 
-  public int MaximumBookingHorizonDays { get; set; }
+  public int MaximumBookingHorizonDays { get; set; } = 90;
 }
