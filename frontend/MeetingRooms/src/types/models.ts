@@ -10,11 +10,6 @@ export interface Room {
   equipment: string[];
 }
 
-export interface RoomUsage {
-  bookingCount: number;
-  scheduledHours: number;
-}
-
 export interface User {
   id: number;
   firstName: string;
