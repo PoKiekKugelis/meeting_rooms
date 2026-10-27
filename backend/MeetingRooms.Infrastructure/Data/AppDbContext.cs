@@ -14,7 +14,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
   public DbSet<Reservation> Reservations => Set<Reservation>();
   public DbSet<RoomEquipment> RoomEquipments => Set<RoomEquipment>();
 
-  public async Task<T> ExecuteInTransactionAsync<T>(Func<CancellationToken, Task<T>> operation, CancellationToken ct)
+  public async Task<T> SerializeWrites<T>(Func<CancellationToken, Task<T>> operation, CancellationToken ct)
   {
     await WriteLock.WaitAsync(ct);
     try

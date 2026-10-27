@@ -33,14 +33,12 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddValidatorsFromAssemblyContaining<ReservationRequestValidator>();
 builder.Services.AddOptions<ReservationBookingOptions>()
     .BindConfiguration(ReservationBookingOptions.SectionName)
-    .ValidateDataAnnotations()
     .Validate(
         options => options.MaximumDurationDays <= options.MaximumBookingHorizonDays,
         "ReservationBooking:MaximumDurationDays must not exceed MaximumBookingHorizonDays.")
     .ValidateOnStart();
 builder.Services.AddOptions<ReservationCompletionOptions>()
     .BindConfiguration(ReservationCompletionOptions.SectionName)
-    .ValidateDataAnnotations()
     .ValidateOnStart();
 builder.Services.AddHostedService<ReservationCompletionWorker>();
 

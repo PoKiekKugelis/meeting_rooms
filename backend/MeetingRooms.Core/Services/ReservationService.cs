@@ -52,7 +52,7 @@ public sealed class ReservationService(
       return Result<ReservationDto>.Failure(validation.Errors[0].ErrorMessage, validation.Errors[0].ErrorCode);
     }
 
-    return await unitOfWork.ExecuteInTransactionAsync(async token =>
+    return await unitOfWork.SerializeWrites(async token =>
     {
       var room = await roomRepository.GetByIdAsync(request.RoomId, token);
       var user = await userRepository.GetByIdAsync(request.UserId, token);
@@ -108,7 +108,7 @@ public sealed class ReservationService(
       return Result<ReservationDto>.Failure(validation.Errors[0].ErrorMessage, validation.Errors[0].ErrorCode);
     }
 
-    return await unitOfWork.ExecuteInTransactionAsync(async token =>
+    return await unitOfWork.SerializeWrites(async token =>
     {
       var reservation = await reservationRepository.GetByIdAsync(id, token);
       if (reservation is null)
@@ -179,7 +179,7 @@ public sealed class ReservationService(
 
   public async Task<Result<bool>> CancelAsync(int id, CancellationToken ct)
   {
-    return await unitOfWork.ExecuteInTransactionAsync(async ct =>
+    return await unitOfWork.SerializeWrites(async ct =>
     {
       var reservation = await reservationRepository.GetByIdAsync(id, ct);
       if (reservation is null)
@@ -213,7 +213,7 @@ public sealed class ReservationService(
 
   public async Task<Result<ReservationDto>> CompleteAsync(int id, CancellationToken ct)
   {
-    return await unitOfWork.ExecuteInTransactionAsync(async token =>
+    return await unitOfWork.SerializeWrites(async token =>
     {
       var reservation = await reservationRepository.GetByIdAsync(id, token);
       if (reservation is null)
@@ -243,7 +243,7 @@ public sealed class ReservationService(
   {
     now = DateTimeUtc.Normalize(now);
 
-    return await unitOfWork.ExecuteInTransactionAsync(async token =>
+    return await unitOfWork.SerializeWrites(async token =>
     {
       var expired = await reservationRepository.GetExpiredBookedAsync(now, token);
       if (expired.Count == 0)
