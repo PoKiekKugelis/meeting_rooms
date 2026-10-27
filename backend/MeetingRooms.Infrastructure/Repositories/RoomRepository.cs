@@ -18,7 +18,8 @@ public sealed class RoomRepository(AppDbContext db) : IRoomRepository
   {
     IQueryable<Room> rooms = db.Rooms
         .AsNoTracking()
-        .Include(x => x.Equipment);
+        .Include(x => x.Equipment)
+        .ThenInclude(link => link.Equipment);
 
     if (!criteria.IncludeInactive)
     {
@@ -50,7 +51,10 @@ public sealed class RoomRepository(AppDbContext db) : IRoomRepository
 
   public async Task<Room?> GetByIdAsync(int id, CancellationToken ct)
   {
-    return await db.Rooms.FirstOrDefaultAsync(x => x.Id == id, ct);
+    return await db.Rooms
+        .Include(x => x.Equipment)
+        .ThenInclude(link => link.Equipment)
+        .FirstOrDefaultAsync(x => x.Id == id, ct);
   }
 
   public void Add(Room room)

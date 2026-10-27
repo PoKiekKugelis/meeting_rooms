@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MeetingRooms.Infrastructure.Queries;
 
-public sealed class UserQueries(AppDbContext db) : IUserQueries
+public sealed class UserQueries(AppDbContext db, TimeProvider clock) : IUserQueries
 {
   public async Task<IReadOnlyList<UserListItem>> GetUsersAsync(CancellationToken ct)
   {
-    var now = DateTime.UtcNow;
+    var now = clock.GetUtcNow().UtcDateTime;
 
     return await BuildUsersQuery(now)
         .OrderBy(user => user.LastName)
@@ -19,7 +19,7 @@ public sealed class UserQueries(AppDbContext db) : IUserQueries
 
   public async Task<UserListItem?> GetUserAsync(int id, CancellationToken ct)
   {
-    var now = DateTime.UtcNow;
+    var now = clock.GetUtcNow().UtcDateTime;
     return await BuildUsersQuery(now)
         .Where(user => user.Id == id)
         .FirstOrDefaultAsync(ct);
