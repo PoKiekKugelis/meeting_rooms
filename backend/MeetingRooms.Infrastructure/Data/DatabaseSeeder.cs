@@ -20,12 +20,26 @@ public static class DatabaseSeeder
     var keturi = new Room("Keturi", 4, "Floor 2");
     keturi.Deactivate();
 
+    var projector = new Equipment("Projector");
+    var tvScreen = new Equipment("TV screen");
+    var whiteboard = new Equipment("Whiteboard");
+
+    db.RoomEquipments.AddRange(
+        new RoomEquipment(vienas, projector),
+        new RoomEquipment(vienas, whiteboard),
+        new RoomEquipment(du, tvScreen),
+        new RoomEquipment(du, whiteboard),
+        new RoomEquipment(trys, projector),
+        new RoomEquipment(trys, tvScreen),
+        new RoomEquipment(keturi, whiteboard));
+
     var petras = new User("Petras", "Petraitis");
     var lukas = new User("Lukas", "Lukaitis");
     var jonas = new User("Jonas", "Jonaitis");
 
     db.Rooms.AddRange(vienas, du, trys, keturi);
     db.Users.AddRange(petras, lukas, jonas);
+    db.Equipments.AddRange(projector, tvScreen, whiteboard);
     await db.SaveChangesAsync(ct);
 
     var cancelled = new Reservation(

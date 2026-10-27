@@ -12,6 +12,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
   public DbSet<Room> Rooms => Set<Room>();
   public DbSet<User> Users => Set<User>();
   public DbSet<Reservation> Reservations => Set<Reservation>();
+  public DbSet<Equipment> Equipments => Set<Equipment>();
   public DbSet<RoomEquipment> RoomEquipments => Set<RoomEquipment>();
 
   public async Task<T> SerializeWrites<T>(Func<CancellationToken, Task<T>> operation, CancellationToken ct)
