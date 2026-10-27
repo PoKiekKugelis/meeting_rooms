@@ -1,6 +1,50 @@
 @MeetingRooms.Api_HostAddress = http://localhost:5107
 
-GET {{MeetingRooms.Api_HostAddress}}/weatherforecast/
+### Rooms (seeded: Vienas, Du, Trys, and inactive Keturi)
+GET {{MeetingRooms.Api_HostAddress}}/api/rooms
 Accept: application/json
 
-###
+### Include inactive rooms
+GET {{MeetingRooms.Api_HostAddress}}/api/rooms?includeInactive=true
+Accept: application/json
+
+### Users
+GET {{MeetingRooms.Api_HostAddress}}/api/users/views
+Accept: application/json
+
+### Reservations
+GET {{MeetingRooms.Api_HostAddress}}/api/reservations
+Accept: application/json
+
+### Create a reservation (R1-R7 are enforced here)
+POST {{MeetingRooms.Api_HostAddress}}/api/reservations
+Content-Type: application/json
+
+{
+  "roomId": 1,
+  "userId": 1,
+  "title": "Sprint planning",
+  "startDate": "2026-10-28T10:00:00Z",
+  "endDate": "2026-10-28T11:00:00Z",
+  "attendeeCount": 5
+}
+
+### Update a reservation
+PUT {{MeetingRooms.Api_HostAddress}}/api/reservations/1
+Content-Type: application/json
+
+{
+  "roomId": 1,
+  "userId": 1,
+  "title": "Sprint planning (moved)",
+  "startDate": "2026-10-29T10:00:00Z",
+  "endDate": "2026-10-29T11:00:00Z",
+  "attendeeCount": 5
+}
+
+### Cancel a reservation
+DELETE {{MeetingRooms.Api_HostAddress}}/api/reservations/1
+
+### End the seeded ongoing reservation early (id 5 on a fresh database)
+POST {{MeetingRooms.Api_HostAddress}}/api/reservations/5/complete
+Accept: application/json
