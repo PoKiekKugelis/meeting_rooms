@@ -7,10 +7,25 @@ namespace MeetingRooms.Infrastructure.Data;
 public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     : DbContext(options), IUnitOfWork
 {
+  private static readonly SemaphoreSlim WriteLock = new(1, 1);
+
   public DbSet<Room> Rooms => Set<Room>();
   public DbSet<User> Users => Set<User>();
   public DbSet<Reservation> Reservations => Set<Reservation>();
   public DbSet<RoomEquipment> RoomEquipments => Set<RoomEquipment>();
+
+  public async Task<T> ExecuteInTransactionAsync<T>(Func<CancellationToken, Task<T>> operation, CancellationToken ct)
+  {
+    await WriteLock.WaitAsync(ct);
+    try
+    {
+      return await operation(ct);
+    }
+    finally
+    {
+      WriteLock.Release();
+    }
+  }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
@@ -78,7 +93,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
                 .HasForeignKey(re => re.RoomId);
 
       entity.HasOne(re => re.Equipment)
-                .WithMany()
+                .WithMany(equipment => equipment.Rooms)
                 .HasForeignKey(re => re.EquipmentId);
     });
   }

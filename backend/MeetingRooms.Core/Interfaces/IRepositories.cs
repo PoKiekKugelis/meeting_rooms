@@ -17,6 +17,8 @@ public interface IReservationRepository
   Task<List<Reservation>> GetAllAsync(CancellationToken ct);
   Task<List<Reservation>> GetFilteredAsync(ReservationListQuery query, CancellationToken ct);
   Task<Reservation?> GetByIdAsync(int id, CancellationToken ct);
+  Task<bool> HasRoomOverlapAsync(int roomId, DateTime startDate, DateTime endDate, int? excludedReservationId, CancellationToken ct);
+  Task<bool> HasOrganizerOverlapAsync(int userId, DateTime startDate, DateTime endDate, int? excludedReservationId, CancellationToken ct);
   void Add(Reservation reservation);
   void Update(Reservation reservation);
   void Delete(Reservation reservation);
