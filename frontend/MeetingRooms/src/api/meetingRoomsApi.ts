@@ -1,6 +1,6 @@
 import { API_ENDPOINTS } from '../constants/endpoints';
 import type { Reservation, ReservationRequest, Room, UserSummary } from '../types/models';
-import type { ReservationFilters, RoomFilters } from '../utils/validation';
+import type { ReservationFilters, RoomFilters, UserFilters } from '../utils/validation';
 import { request } from './client';
 
 export function getRooms(filters: RoomFilters, signal?: AbortSignal) {
@@ -15,8 +15,11 @@ export function getRooms(filters: RoomFilters, signal?: AbortSignal) {
   });
 }
 
-export function getUserSummaries(signal?: AbortSignal) {
-  return request<UserSummary[]>(API_ENDPOINTS.userViews, { signal });
+export function getUserSummaries(filters: UserFilters, signal?: AbortSignal) {
+  return request<UserSummary[]>(API_ENDPOINTS.users, {
+    query: { includeReservationCount: filters.includeReservationCount },
+    signal,
+  });
 }
 
 export function getReservations(filters: ReservationFilters, signal?: AbortSignal) {

@@ -32,7 +32,7 @@ export function ReservationManagementPanel({
   onCreate,
 }: ReservationManagementPanelProps) {
   const rooms = useRooms(ALL_ROOMS);
-  const users = useUsers();
+  const users = useUsers({ includeReservationCount: false });
   const roomData = rooms.data ?? NO_ROOMS;
   const userData = users.data ?? NO_USERS;
   const roomOptions = roomData.map((room) => ({

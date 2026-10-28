@@ -7,7 +7,7 @@ import { RoomManagementPanel } from '../components/RoomManagementPanel';
 import { useReservations } from '../hooks/useReservations';
 import { useRooms } from '../hooks/useRooms';
 import type { Reservation, Room } from '../types/models';
-import { EMPTY_ROOM_FILTERS, type RoomFilters as RoomFiltersValue } from '../utils/validation';
+import { EMPTY_ROOM_FILTERS, type RoomFilters } from '../utils/validation';
 import {
   getScheduleDays,
   getScheduleFilters,
@@ -15,11 +15,11 @@ import {
   type ScheduleView,
 } from '../utils/schedule';
 
-const ALL_ROOMS: RoomFiltersValue = { ...EMPTY_ROOM_FILTERS, includeInactive: true };
+const ALL_ROOMS: RoomFilters = { ...EMPTY_ROOM_FILTERS, includeInactive: true };
 const NO_ROOMS: Room[] = [];
 const NO_RESERVATIONS: Reservation[] = [];
 
-function filterRooms(rooms: Room[], filters: RoomFiltersValue): Room[] {
+function filterRooms(rooms: Room[], filters: RoomFilters): Room[] {
   const minimumCapacity = Number(filters.minimumCapacity) || 0;
 
   return rooms.filter(

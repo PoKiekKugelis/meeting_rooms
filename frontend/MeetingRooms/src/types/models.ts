@@ -21,7 +21,7 @@ export interface User {
 }
 
 export interface UserSummary extends User {
-  activeReservationsCount: number;
+  activeReservationsCount?: number;
 }
 
 export interface Reservation {

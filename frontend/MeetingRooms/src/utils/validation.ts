@@ -16,6 +16,10 @@ export interface ReservationFilters {
   to: string;
 }
 
+export interface UserFilters {
+  includeReservationCount: boolean;
+}
+
 export const EMPTY_RESERVATION_FILTERS: ReservationFilters = {
   roomId: '',
   userId: '',

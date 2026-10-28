@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { usersQuery } from '../api/queries';
+import { userListQuery } from '../api/queries';
+import type { UserFilters } from '../utils/validation';
 
-export function useUsers() {
-  return useQuery(usersQuery());
+export function useUsers(filters: UserFilters) {
+  return useQuery(userListQuery(filters));
 }

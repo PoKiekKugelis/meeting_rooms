@@ -1,6 +1,6 @@
 export const API_ENDPOINTS = {
   rooms: '/api/rooms',
-  userViews: '/api/users/views',
+  users: '/api/users',
   reservations: '/api/reservations',
 
   reservationById: (id: number) => `/api/reservations/${id}`,

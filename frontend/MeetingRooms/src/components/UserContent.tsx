@@ -4,6 +4,7 @@ import { useUsers } from '../hooks/useUsers';
 import type { UserSummary } from '../types/models';
 import { FeedbackState } from './FeedbackState';
 import { Pagination } from './Pagination';
+import type { UserFilters } from '../utils/validation';
 
 function UsersTable({ users }: { users: UserSummary[] }) {
   return (
@@ -50,7 +51,7 @@ function UsersTable({ users }: { users: UserSummary[] }) {
                 {user.lastName}
               </td>
               <td className="px-5 py-4 text-right font-semibold tabular-nums">
-                {user.activeReservationsCount}
+                {user.activeReservationsCount ?? '—'}
               </td>
             </tr>
           ))}
@@ -61,7 +62,8 @@ function UsersTable({ users }: { users: UserSummary[] }) {
 }
 
 export function UserContent() {
-  const { data, isLoading, error, refetch, isRefetching } = useUsers();
+  const FILTER: UserFilters = { includeReservationCount: true };
+  const { data, isLoading, error, refetch, isRefetching } = useUsers(FILTER);
   const [page, setPage] = useState(1);
 
   if (isLoading) return <FeedbackState message="Loading users..." />;

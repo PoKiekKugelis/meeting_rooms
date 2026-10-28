@@ -1,6 +1,6 @@
 import { queryOptions } from '@tanstack/react-query';
 import { getReservations, getRooms, getUserSummaries } from './meetingRoomsApi';
-import type { ReservationFilters, RoomFilters } from '../utils/validation';
+import type { ReservationFilters, RoomFilters, UserFilters } from '../utils/validation';
 
 export const queryKeys = {
   rooms: {
@@ -9,6 +9,8 @@ export const queryKeys = {
   },
   users: {
     all: ['users'] as const,
+    list: (filters: UserFilters) =>
+      ['users', 'list', filters] as const,
   },
   reservations: {
     all: ['reservations'] as const,
@@ -22,10 +24,10 @@ export const roomListQuery = (filters: RoomFilters) =>
     queryFn: ({ signal }) => getRooms(filters, signal),
   });
 
-export const usersQuery = () =>
+export const userListQuery = (filters: UserFilters) =>
   queryOptions({
-    queryKey: queryKeys.users.all,
-    queryFn: ({ signal }) => getUserSummaries(signal),
+    queryKey: queryKeys.users.list(filters),
+    queryFn: ({ signal }) => getUserSummaries(filters, signal),
   });
 
 export const reservationListQuery = (filters: ReservationFilters) =>
