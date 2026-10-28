@@ -8,7 +8,7 @@ export function getRooms(filters: RoomFilters, signal?: AbortSignal) {
     query: {
       minimumCapacity: filters.minimumCapacity,
       floor: filters.floor,
-      equipment: filters.equipment,
+      equipment: Object.keys(filters.equipment),
       includeInactive: filters.includeInactive,
     },
     signal,

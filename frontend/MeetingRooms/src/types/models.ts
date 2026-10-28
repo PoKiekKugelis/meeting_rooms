@@ -7,7 +7,12 @@ export interface Room {
   location: string;
   status: RoomStatus;
   isCurrentlyReserved: boolean;
-  equipment: string[];
+  equipment: RoomEquipment[];
+}
+
+export interface RoomEquipment {
+  name: string;
+  quantity: number;
 }
 
 export interface User {

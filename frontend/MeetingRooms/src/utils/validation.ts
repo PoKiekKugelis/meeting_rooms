@@ -4,7 +4,7 @@ import type { ReservationStatus } from '../constants/status';
 export interface RoomFilters {
   minimumCapacity: string;
   floor: string;
-  equipment: string[];
+  equipment: Record<string, string>;
   includeInactive: boolean;
 }
 
@@ -27,7 +27,7 @@ export const EMPTY_RESERVATION_FILTERS: ReservationFilters = {
 export const EMPTY_ROOM_FILTERS: RoomFilters = {
   minimumCapacity: '',
   floor: '',
-  equipment: [],
+  equipment: {},
   includeInactive: false,
 };
 
