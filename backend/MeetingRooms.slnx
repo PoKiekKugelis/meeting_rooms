@@ -3,4 +3,5 @@
   <Project Path="MeetingRooms.Core/MeetingRooms.Core.csproj" />
   <Project Path="MeetingRooms.Domain/MeetingRooms.Domain.csproj" />
   <Project Path="MeetingRooms.Infrastructure/MeetingRooms.Infrastructure.csproj" />
+  <Project Path="MeetingRooms.Tests/MeetingRooms.Tests.csproj" />
 </Solution>
