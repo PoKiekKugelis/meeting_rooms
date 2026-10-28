@@ -29,7 +29,7 @@ public sealed class UserService(
       : Result<UserDto>.Success(mapper.Map<UserDto>(user));
   }
 
-  public async Task<Result<UserDto>> CreateAsync(CreateUserDto request, CancellationToken ct)
+  public async Task<Result<UserDto>> CreateAsync(UserRequest request, CancellationToken ct)
   {
     User user;
     try

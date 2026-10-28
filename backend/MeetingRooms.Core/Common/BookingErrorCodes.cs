@@ -1,5 +1,8 @@
 namespace MeetingRooms.Core.Common;
 
+/// <summary>
+/// Contains error codes for booking-related operations, used for consistent error handling and reporting across the application
+/// </summary>
 public static class BookingErrorCodes
 {
   // Request shape

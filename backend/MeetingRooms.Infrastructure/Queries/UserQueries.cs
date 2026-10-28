@@ -13,7 +13,7 @@ public sealed class UserQueries(AppDbContext db, TimeProvider clock) : IUserQuer
     var now = clock.GetUtcNow().UtcDateTime;
 
     return await BuildUsersQuery(now)
-        .OrderBy(user => user.LastName)
+        .OrderBy(user => user.Id)
         .ToListAsync(ct);
   }
 

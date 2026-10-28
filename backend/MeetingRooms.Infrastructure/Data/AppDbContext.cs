@@ -4,17 +4,46 @@ using MeetingRooms.Domain.Entities;
 
 namespace MeetingRooms.Infrastructure.Data;
 
+/// <summary>
+/// Represents the application's database context, providing access to the database and managing entity sets
+/// </summary>
+/// <param name="options">The options for configuring the database context</param>
 public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     : DbContext(options), IUnitOfWork
 {
+  /// <summary>
+  /// A semaphore to ensure that write operations are serialized, preventing concurrent reservation writes to the database
+  /// </summary>
   private static readonly SemaphoreSlim WriteLock = new(1, 1);
 
+  /// <summary>
+  /// The DbSet for rooms
+  /// </summary>
   public DbSet<Room> Rooms => Set<Room>();
+  /// <summary>
+  /// The DbSet for reservations
+  /// </summary>
   public DbSet<User> Users => Set<User>();
+  /// <summary>
+  /// The DbSet for equipment
+  /// </summary>
   public DbSet<Reservation> Reservations => Set<Reservation>();
+  /// <summary>
+  /// The DbSet for equipment
+  /// </summary>
   public DbSet<Equipment> Equipments => Set<Equipment>();
+  /// <summary>
+  /// The DbSet for room equipment associations
+  /// </summary>
   public DbSet<RoomEquipment> RoomEquipments => Set<RoomEquipment>();
 
+  /// <summary>
+  /// Ensures that write operations are serialized, preventing concurrent reservation writes to the database
+  /// </summary>
+  /// <typeparam name="T">The type of the result value</typeparam>
+  /// <param name="operation">The operation to serialize</param>
+  /// <param name="ct">The cancellation token</param>
+  /// <returns>The result of the operation</returns>
   public async Task<T> SerializeWrites<T>(Func<CancellationToken, Task<T>> operation, CancellationToken ct)
   {
     await WriteLock.WaitAsync(ct);
@@ -28,6 +57,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options)
     }
   }
 
+  /// <summary>
+  /// Configures the model for the database context, defining entity relationships and constraints
+  /// </summary>
+  /// <param name="modelBuilder">The model builder</param>
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
     base.OnModelCreating(modelBuilder);

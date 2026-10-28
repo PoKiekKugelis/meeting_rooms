@@ -25,7 +25,7 @@ public sealed class RoomService(
         : Result<RoomDto>.Success(mapper.Map<RoomDto>(room));
   }
 
-  public async Task<Result<RoomDto>> CreateAsync(CreateRoomDto request, CancellationToken ct)
+  public async Task<Result<RoomDto>> CreateAsync(RoomRequest request, CancellationToken ct)
   {
     Room room;
     try

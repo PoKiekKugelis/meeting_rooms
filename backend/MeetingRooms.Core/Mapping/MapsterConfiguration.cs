@@ -5,6 +5,9 @@ using MeetingRooms.Domain.Entities;
 
 namespace MeetingRooms.Core.Mapping;
 
+/// <summary>
+/// Provides configuration for mapping between domain entities and data transfer objects (DTOs) using Mapster
+/// </summary>
 public static class MapsterConfiguration
 {
   public static TypeAdapterConfig Create()

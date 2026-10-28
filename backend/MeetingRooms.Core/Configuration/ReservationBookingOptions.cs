@@ -1,5 +1,8 @@
 namespace MeetingRooms.Core.Configuration;
 
+/// <summary>
+/// Represents configuration options for reservation booking, including maximum duration and booking horizon
+/// </summary>
 public sealed class ReservationBookingOptions
 {
   public const string SectionName = "ReservationBooking";

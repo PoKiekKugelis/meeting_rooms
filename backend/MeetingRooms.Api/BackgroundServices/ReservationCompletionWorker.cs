@@ -4,6 +4,13 @@ using Microsoft.Extensions.Options;
 
 namespace MeetingRooms.Api.BackgroundServices;
 
+/// <summary>
+/// Background service that periodically checks for expired reservations and marks them as completed
+/// </summary>
+/// <param name="scopeFactory">The service scope factory</param>
+/// <param name="clock">The time provider</param>
+/// <param name="options">The reservation completion options</param>
+/// <param name="logger">The logger</param>
 public sealed class ReservationCompletionWorker(
     IServiceScopeFactory scopeFactory,
     TimeProvider clock,
@@ -18,7 +25,7 @@ public sealed class ReservationCompletionWorker(
 
     while (!stoppingToken.IsCancellationRequested)
     {
-      await SweepAsync(stoppingToken);
+      await ScanAsync(stoppingToken);
 
       try
       {
@@ -34,7 +41,12 @@ public sealed class ReservationCompletionWorker(
     }
   }
 
-  private async Task SweepAsync(CancellationToken ct)
+  /// <summary>
+  /// Sweeps for expired reservations and marks them as completed
+  /// </summary>
+  /// <param name="ct">The cancellation token</param>
+  /// <returns>A task representing the asynchronous operation</returns>
+  private async Task ScanAsync(CancellationToken ct)
   {
     try
     {

@@ -7,8 +7,16 @@ using Microsoft.Extensions.Options;
 
 namespace MeetingRooms.Core.Validators;
 
+/// <summary>
+/// Validates reservation requests to ensure they meet business rules and constraints
+/// </summary>
 public sealed class ReservationRequestValidator : AbstractValidator<ReservationRequest>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReservationRequestValidator"/> class with specified options and clock
+    /// </summary>
+    /// <param name="options">The reservation booking options</param>
+    /// <param name="clock">The time provider</param>
   public ReservationRequestValidator(IOptions<ReservationBookingOptions> options, TimeProvider clock)
   {
     var limits = options.Value;

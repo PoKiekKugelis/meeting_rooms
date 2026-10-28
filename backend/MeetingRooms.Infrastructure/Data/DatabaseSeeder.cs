@@ -3,8 +3,19 @@ using MeetingRooms.Domain.Entities;
 
 namespace MeetingRooms.Infrastructure.Data;
 
+/// <summary>
+/// Provides methods to seed the database with initial data for rooms, users, equipment, and reservations
+/// </summary>
 public static class DatabaseSeeder
 {
+
+    /// <summary>
+    /// Seeds the database with initial data for rooms, users, equipment, and reservations if the database is empty
+    /// </summary>
+    /// <param name="db">The application's database context</param>
+    /// <param name="clock">The time provider</param>
+    /// <param name="ct">The cancellation token</param>
+    /// <returns>A task representing the asynchronous operation</returns>
   public static async Task SeedAsync(AppDbContext db, TimeProvider clock, CancellationToken ct = default)
   {
     if (await db.Rooms.AnyAsync(ct))
@@ -51,9 +62,9 @@ public static class DatabaseSeeder
         lukas);
     cancelled.Cancel(now);
 
-    // The hosted completion worker transitions this one on startup.
+    // The completion worker changes the status of this one to "Completed" on startup.
     var expired = new Reservation(
-        "Expired retrospective",
+        "Old reservation",
         now.AddHours(-3),
         now.AddHours(-2),
         4,
@@ -91,6 +102,13 @@ public static class DatabaseSeeder
     await db.SaveChangesAsync(ct);
   }
 
+  /// <summary>
+  /// Calculates a DateTime that is a specified number of days and hours from a given DateTime, normalized to UTC
+  /// </summary>
+  /// <param name="now">The starting DateTime</param>
+  /// <param name="days">The number of days to add</param>
+  /// <param name="hour">The hour to set</param>
+  /// <returns>The calculated DateTime</returns>
   private static DateTime At(DateTime now, int days, int hour) =>
       DateTime.SpecifyKind(now.Date.AddDays(days).AddHours(hour), DateTimeKind.Utc);
 }
