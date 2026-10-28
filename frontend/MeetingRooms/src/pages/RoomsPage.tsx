@@ -45,14 +45,10 @@ export function RoomsPage() {
 
   const roomsQuery = useRooms(ALL_ROOMS);
   const roomData = roomsQuery.data ?? NO_ROOMS;
-  const floorOptions = useMemo(
-    () => [...new Set(roomData.map((room) => room.location))].sort(),
-    [roomData],
-  );
-  const equipmentOptions = useMemo(
-    () => [...new Set(roomData.flatMap((room) => room.equipment.map((item) => item.name)))].sort(),
-    [roomData],
-  );
+  const floorOptions = [...new Set(roomData.map((room) => room.location))].sort();
+  const equipmentOptions = [
+    ...new Set(roomData.flatMap((room) => room.equipment.map((item) => item.name))),
+  ].sort();
   const visibleRooms = useMemo(
     () => filterRooms(roomData, appliedFilters),
     [roomData, appliedFilters],
@@ -61,11 +57,8 @@ export function RoomsPage() {
   const currentPage = Math.min(roomPage, pageCount);
   const paginatedRooms = visibleRooms.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
-  const scheduleDays = useMemo(
-    () => getScheduleDays(selectedDate, scheduleView),
-    [selectedDate, scheduleView],
-  );
-  const scheduleFilters = useMemo(() => getScheduleFilters(scheduleDays), [scheduleDays]);
+  const scheduleDays = getScheduleDays(selectedDate, scheduleView);
+  const scheduleFilters = getScheduleFilters(scheduleDays);
   const scheduleQuery = useReservations(scheduleFilters);
 
   const reservations = scheduleQuery.data ?? NO_RESERVATIONS;
