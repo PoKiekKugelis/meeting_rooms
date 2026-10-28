@@ -5,7 +5,7 @@ import { FeedbackState } from '../components/FeedbackState';
 import { PageHeader } from '../components/PageHeader';
 import { Pagination } from '../components/Pagination';
 import { RoomCard } from '../components/RoomCard';
-import { RoomScheduleControls } from '../components/RoomScheduleControls';
+import { RoomManagementPanel } from '../components/RoomManagementPanel';
 import { useReservations } from '../hooks/useReservations';
 import { useRooms } from '../hooks/useRooms';
 import type { Reservation, Room } from '../types/models';
@@ -143,7 +143,7 @@ export function RoomsPage() {
         title="Find the right room"
         description="Meeting room details and scheduled bookings timelines"
       />
-      <RoomScheduleControls
+      <RoomManagementPanel
         filters={draftFilters}
         floorOptions={floorOptions}
         equipmentOptions={equipmentOptions}

@@ -9,7 +9,7 @@ import {
   type ScheduleView,
 } from '../utils/schedule';
 
-interface RoomScheduleControlsProps {
+interface RoomManagementPanelProps {
   filters: RoomFiltersValue;
   floorOptions: string[];
   equipmentOptions: string[];
@@ -24,7 +24,7 @@ interface RoomScheduleControlsProps {
 const buttonClass =
   'rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800';
 
-export function RoomScheduleControls({
+export function RoomManagementPanel({
   filters,
   floorOptions,
   equipmentOptions,
@@ -34,7 +34,7 @@ export function RoomScheduleControls({
   onApplyFilters,
   onDateChange,
   onViewChange,
-}: RoomScheduleControlsProps) {
+}: RoomManagementPanelProps) {
   const periodLabel = formatSchedulePeriod(getScheduleDays(selectedDate, view), view);
   const navigate = (direction: -1 | 1) => {
     const offset = view === 'week' ? 7 : 1;
