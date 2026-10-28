@@ -1,10 +1,14 @@
+import { useState } from 'react';
 import { FeedbackState } from '../components/FeedbackState';
 import { PageHeader } from '../components/PageHeader';
+import { Pagination } from '../components/Pagination';
+import { PAGE_SIZE } from '../constants/pagination';
 import { useUsers } from '../hooks/useUsers';
 import type { UserSummary } from '../types/models';
 
 function UsersContent() {
   const { data, isLoading, error, refetch, isRefetching } = useUsers();
+  const [page, setPage] = useState(1);
 
   if (isLoading) return <FeedbackState message="Loading users..." />;
   if (error && !data) {
@@ -17,6 +21,10 @@ function UsersContent() {
     );
   }
   if (!data?.length) return <FeedbackState message="No users found." />;
+
+  const pageCount = Math.max(1, Math.ceil(data.length / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+  const paginatedUsers = data.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
     <>
@@ -40,7 +48,13 @@ function UsersContent() {
           Updating users...
         </p>
       ) : null}
-      <UsersTable users={data} />
+      <UsersTable users={paginatedUsers} />
+      <Pagination
+        currentPage={currentPage}
+        pageSize={PAGE_SIZE}
+        totalItems={data.length}
+        onPageChange={setPage}
+      />
     </>
   );
 }
