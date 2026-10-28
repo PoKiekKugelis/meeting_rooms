@@ -76,7 +76,7 @@ function RoomContent({
   if (rooms.length === 0) return <FeedbackState message="No rooms match your filters." />;
 
   return (
-    <>
+    <div>
       <div className="grid gap-5 xl:grid-cols-3">
         {rooms.map((room) => (
           <RoomCard
@@ -97,7 +97,7 @@ function RoomContent({
         totalItems={totalItems}
         onPageChange={onPageChange}
       />
-    </>
+    </div>
   );
 }
 
@@ -139,39 +139,47 @@ export function RoomsPage() {
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <PageHeader
-        eyebrow="Workspace overview"
-        title="Find the right room"
+        title="Find rooms"
         description="Meeting room details and scheduled bookings timelines"
       />
-      <RoomManagementPanel
-        filters={draftFilters}
-        floorOptions={floorOptions}
-        equipmentOptions={equipmentOptions}
-        selectedDate={selectedDate}
-        view={scheduleView}
-        onFiltersChange={setDraftFilters}
-        onApplyFilters={() => {
-          setAppliedFilters(draftFilters);
-          setRoomPage(1);
-        }}
-        onDateChange={setSelectedDate}
-        onViewChange={setScheduleView}
-      />
-      <RoomContent
-        isLoading={roomsQuery.isLoading}
-        error={roomsQuery.error?.message ?? ''}
-        rooms={paginatedRooms}
-        reservations={reservations}
-        scheduleDays={scheduleDays}
-        scheduleView={scheduleView}
-        scheduleLoading={scheduleQuery.isLoading}
-        scheduleError={scheduleError}
-        currentPage={currentPage}
-        totalItems={visibleRooms.length}
-        onPageChange={setRoomPage}
-        onRetryRooms={() => void roomsQuery.refetch()}
-        onRetrySchedule={() => void scheduleQuery.refetch()}
-      />
+      <section
+        aria-label="Room search and schedules"
+        className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"
+      >
+        <div className="p-5">
+          <RoomManagementPanel
+            filters={draftFilters}
+            floorOptions={floorOptions}
+            equipmentOptions={equipmentOptions}
+            selectedDate={selectedDate}
+            view={scheduleView}
+            onFiltersChange={setDraftFilters}
+            onApplyFilters={() => {
+              setAppliedFilters(draftFilters);
+              setRoomPage(1);
+            }}
+            onDateChange={setSelectedDate}
+            onViewChange={setScheduleView}
+          />
+        </div>
+        <div className="border-t border-slate-200 p-5 dark:border-slate-800">
+          <RoomContent
+            isLoading={roomsQuery.isLoading}
+            error={roomsQuery.error?.message ?? ''}
+            rooms={paginatedRooms}
+            reservations={reservations}
+            scheduleDays={scheduleDays}
+            scheduleView={scheduleView}
+            scheduleLoading={scheduleQuery.isLoading}
+            scheduleError={scheduleError}
+            currentPage={currentPage}
+            totalItems={visibleRooms.length}
+            onPageChange={setRoomPage}
+            onRetryRooms={() => void roomsQuery.refetch()}
+            onRetrySchedule={() => void scheduleQuery.refetch()}
+          />
+        </div>
+      </section>
       {scheduleQuery.isRefetching ? (
         <p role="status" className="mt-4 text-sm text-slate-500 dark:text-slate-400">
           Updating room schedules...
