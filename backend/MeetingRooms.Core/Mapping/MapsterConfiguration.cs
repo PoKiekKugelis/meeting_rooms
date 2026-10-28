@@ -1,6 +1,5 @@
 using Mapster;
 using MeetingRooms.Core.DTOs;
-using MeetingRooms.Core.Queries;
 using MeetingRooms.Domain.Entities;
 
 namespace MeetingRooms.Core.Mapping;
@@ -29,7 +28,6 @@ public static class MapsterConfiguration
         .Map(destination => destination.Status, source => source.Status.ToString());
 
     config.NewConfig<User, UserDto>();
-    config.NewConfig<UserListItem, UserViewDto>();
 
     return config;
   }

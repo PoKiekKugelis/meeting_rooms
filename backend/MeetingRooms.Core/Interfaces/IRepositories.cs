@@ -115,12 +115,6 @@ public interface IReservationRepository
 public interface IUserRepository
 {
   /// <summary>
-  /// Gets all users from the repository
-  /// </summary>
-  /// <param name="ct">The cancellation token</param>
-  /// <returns>A task representing the asynchronous operation</returns>
-  Task<List<User>> GetAllAsync(CancellationToken ct);
-  /// <summary>
   /// Gets a user by its ID
   /// </summary>
   /// <param name="id">The user ID</param>

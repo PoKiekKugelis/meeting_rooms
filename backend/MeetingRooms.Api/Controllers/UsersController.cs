@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using MeetingRooms.Api.Extensions;
 using MeetingRooms.Core.DTOs;
 using MeetingRooms.Core.Interfaces;
+using MeetingRooms.Core.Queries;
 
 namespace MeetingRooms.Api.Controllers;
 
@@ -17,17 +18,13 @@ public sealed class UsersController(IUserService service) : ControllerBase
   /// Retrieves a list of all users
   /// </summary>
   /// <param name="ct">The cancellation token</param>
-  /// <returns>The list of users</returns>
+  /// <param name="includeReservationCount">Whether to include active reservations count</param>
+  /// <returns>The list of user summaries</returns>
   [HttpGet]
-  public Task<List<UserDto>> GetAll(CancellationToken ct) => service.GetAllAsync(ct);
-
-  /// <summary>
-  /// Retrieves a list of all users with their active reservations count
-  /// </summary>
-  /// <param name="ct">The cancellation token</param>
-  /// <returns>The list of users with views</returns>
-  [HttpGet("views")]
-  public Task<List<UserViewDto>> GetAllViews(CancellationToken ct) => service.GetAllViewAsync(ct);
+  public Task<List<UserSummaryDto>> GetAll([FromQuery] bool includeReservationCount = false, CancellationToken ct = default)
+  {
+    return service.GetFilteredAsync(new UserListQuery(includeReservationCount), ct);
+  }
 
   /// <summary>
   /// Retrieves a user by their ID

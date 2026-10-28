@@ -9,7 +9,7 @@ GET {{MeetingRooms.Api_HostAddress}}/api/rooms?includeInactive=true
 Accept: application/json
 
 ### Users
-GET {{MeetingRooms.Api_HostAddress}}/api/users/views
+GET {{MeetingRooms.Api_HostAddress}}/api/users?includeReservationCount=true
 Accept: application/json
 
 ### Reservations

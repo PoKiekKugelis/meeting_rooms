@@ -1,4 +1,5 @@
 using MeetingRooms.Core.Queries;
+using MeetingRooms.Core.DTOs;
 
 namespace MeetingRooms.Core.Interfaces;
 
@@ -8,16 +9,10 @@ namespace MeetingRooms.Core.Interfaces;
 public interface IUserQueries
 {
   /// <summary>
-  /// Gets a list of users with their active reservations count
+  /// Gets user summaries, optionally including the count of non-ended booked reservations
   /// </summary>
+  /// <param name="query">The list query options</param>
   /// <param name="ct">The cancellation token</param>
-  /// <returns>The list of users with reservation counts</returns>
-  Task<IReadOnlyList<UserListItem>> GetUsersAsync(CancellationToken ct);
-  /// <summary>
-  /// Gets a user by their ID
-  /// </summary>
-  /// <param name="id">The ID of the user to get</param>
-  /// <param name="ct">The cancellation token</param>
-  /// <returns>The requested user</returns>
-  Task<UserListItem?> GetUserAsync(int id, CancellationToken ct);
+  /// <returns>The user summaries matching the requested representation</returns>
+  Task<List<UserSummaryDto>> GetUsersAsync(UserListQuery query, CancellationToken ct);
 }

@@ -102,17 +102,12 @@ public interface IReservationService
 public interface IUserService
 {
   /// <summary>
-  /// Gets a list of all users
+  /// Gets a filtered list of user summaries
   /// </summary>
+  /// <param name="query">The list query options</param>
   /// <param name="ct">The cancellation token</param>
-  /// <returns>The list of users</returns>
-  Task<List<UserDto>> GetAllAsync(CancellationToken ct);
-  /// <summary>
-  /// Gets a list of all users with their active reservations count
-  /// </summary>
-  /// <param name="ct">The cancellation token</param>
-  /// <returns>The list of users with reservation counts</returns>
-  Task<List<UserViewDto>> GetAllViewAsync(CancellationToken ct);
+  /// <returns>The user summaries matching the requested representation</returns>
+  Task<List<UserSummaryDto>> GetFilteredAsync(UserListQuery query, CancellationToken ct);
   /// <summary>
   /// Gets a user by their ID
   /// </summary>
