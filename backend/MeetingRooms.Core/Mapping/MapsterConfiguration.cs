@@ -15,7 +15,9 @@ public static class MapsterConfiguration
         .Map(destination => destination.Status, source => source.Status.ToString())
         .Map(
             destination => destination.Equipment,
-            source => source.Equipment.Select(link => link.Equipment.Name).ToList())
+            source => source.Equipment
+                .Select(link => new RoomEquipmentDto(link.Equipment.Name, link.Quantity))
+                .ToList())
         .Map(
             destination => destination.IsCurrentlyReserved,
             source => source.Reservations.Any(reservation =>

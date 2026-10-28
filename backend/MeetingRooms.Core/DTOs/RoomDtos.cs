@@ -7,7 +7,7 @@ public sealed record RoomDto(
     string Location,
     string Status,
     bool IsCurrentlyReserved,
-    IReadOnlyCollection<string> Equipment);
+    IReadOnlyCollection<RoomEquipmentDto> Equipment);
 
 public sealed record CreateRoomDto(
     string Name,

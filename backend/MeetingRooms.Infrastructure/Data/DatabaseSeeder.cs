@@ -25,12 +25,12 @@ public static class DatabaseSeeder
     var whiteboard = new Equipment("Whiteboard");
 
     db.RoomEquipments.AddRange(
-        new RoomEquipment(vienas, projector),
+        new RoomEquipment(vienas, projector, quantity: 2),
         new RoomEquipment(vienas, whiteboard),
         new RoomEquipment(du, tvScreen),
         new RoomEquipment(du, whiteboard),
         new RoomEquipment(trys, projector),
-        new RoomEquipment(trys, tvScreen),
+        new RoomEquipment(trys, tvScreen, quantity: 2),
         new RoomEquipment(keturi, whiteboard));
 
     var petras = new User("Petras", "Petraitis");
