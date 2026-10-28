@@ -20,9 +20,7 @@ export function Pagination({
   const lastItem = Math.min(currentPage * pageSize, totalItems);
 
   return (
-    <nav
-      className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm"
-    >
+    <nav className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm">
       <p className="text-slate-600 dark:text-slate-300">
         Showing{' '}
         <span className="font-semibold">

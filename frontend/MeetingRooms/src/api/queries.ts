@@ -9,8 +9,7 @@ export const queryKeys = {
   },
   users: {
     all: ['users'] as const,
-    list: (filters: UserFilters) =>
-      ['users', 'list', filters] as const,
+    list: (filters: UserFilters) => ['users', 'list', filters] as const,
   },
   reservations: {
     all: ['reservations'] as const,
