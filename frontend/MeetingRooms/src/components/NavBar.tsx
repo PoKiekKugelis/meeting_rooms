@@ -16,7 +16,7 @@ export function NavBar() {
         >
           Meeting <span className="text-emerald-600">Rooms</span>
         </NavLink>
-        <nav aria-label="Main navigation" className="flex gap-1">
+        <nav className="flex gap-1">
           <NavLink to="/rooms" className={linkClass}>
             Rooms
           </NavLink>

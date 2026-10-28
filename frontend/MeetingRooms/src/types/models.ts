@@ -6,7 +6,6 @@ export interface Room {
   capacity: number;
   location: string;
   status: RoomStatus;
-  isCurrentlyReserved: boolean;
   equipment: RoomEquipment[];
 }
 

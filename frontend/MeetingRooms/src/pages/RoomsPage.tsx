@@ -1,0 +1,182 @@
+import { useMemo, useState } from 'react';
+import { ROOM_STATUS } from '../constants/status';
+import { PAGE_SIZE } from '../constants/pagination';
+import { FeedbackState } from '../components/FeedbackState';
+import { PageHeader } from '../components/PageHeader';
+import { Pagination } from '../components/Pagination';
+import { RoomCard } from '../components/RoomCard';
+import { RoomScheduleControls } from '../components/RoomScheduleControls';
+import { useReservations } from '../hooks/useReservations';
+import { useRooms } from '../hooks/useRooms';
+import type { Reservation, Room } from '../types/models';
+import { EMPTY_ROOM_FILTERS, type RoomFilters as RoomFiltersValue } from '../utils/validation';
+import {
+  getScheduleDays,
+  getScheduleFilters,
+  toDateInputValue,
+  type ScheduleView,
+} from '../utils/schedule';
+
+const ALL_ROOMS: RoomFiltersValue = { ...EMPTY_ROOM_FILTERS, includeInactive: true };
+const NO_ROOMS: Room[] = [];
+const NO_RESERVATIONS: Reservation[] = [];
+
+function filterRooms(rooms: Room[], filters: RoomFiltersValue): Room[] {
+  const minimumCapacity = Number(filters.minimumCapacity) || 0;
+
+  return rooms.filter(
+    (room) =>
+      (filters.includeInactive || room.status === ROOM_STATUS.ACTIVE) &&
+      room.capacity >= minimumCapacity &&
+      (!filters.floor || room.location === filters.floor) &&
+      Object.entries(filters.equipment).every(([name, quantity]) => {
+        const minimumQuantity = Math.max(1, Math.ceil(Number(quantity) || 1));
+        return room.equipment.some(
+          (item) => item.name === name && item.quantity >= minimumQuantity,
+        );
+      }),
+  );
+}
+
+interface RoomContentProps {
+  isLoading: boolean;
+  error: string;
+  rooms: Room[];
+  reservations: Reservation[];
+  scheduleDays: Date[];
+  scheduleView: ScheduleView;
+  scheduleLoading: boolean;
+  scheduleError: string;
+  currentPage: number;
+  totalItems: number;
+  onPageChange: (page: number) => void;
+  onRetryRooms: () => void;
+  onRetrySchedule: () => void;
+}
+
+function RoomContent({
+  isLoading,
+  error,
+  rooms,
+  reservations,
+  scheduleDays,
+  scheduleView,
+  scheduleLoading,
+  scheduleError,
+  currentPage,
+  totalItems,
+  onPageChange,
+  onRetryRooms,
+  onRetrySchedule,
+}: RoomContentProps) {
+  if (isLoading) return <FeedbackState message="Loading rooms..." />;
+  if (error) {
+    return <FeedbackState message={error} actionLabel="Try again" onAction={onRetryRooms} />;
+  }
+  if (rooms.length === 0) return <FeedbackState message="No rooms match your filters." />;
+
+  return (
+    <>
+      <div className="grid gap-5 xl:grid-cols-3">
+        {rooms.map((room) => (
+          <RoomCard
+            key={room.id}
+            room={room}
+            reservations={reservations}
+            scheduleDays={scheduleDays}
+            scheduleView={scheduleView}
+            scheduleLoading={scheduleLoading}
+            scheduleError={scheduleError}
+            onRetrySchedule={onRetrySchedule}
+          />
+        ))}
+      </div>
+      <Pagination
+        currentPage={currentPage}
+        pageSize={PAGE_SIZE}
+        totalItems={totalItems}
+        onPageChange={onPageChange}
+      />
+    </>
+  );
+}
+
+export function RoomsPage() {
+  const [draftFilters, setDraftFilters] = useState(EMPTY_ROOM_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState(EMPTY_ROOM_FILTERS);
+  const [roomPage, setRoomPage] = useState(1);
+  const [scheduleView, setScheduleView] = useState<ScheduleView>('day');
+  const [selectedDate, setSelectedDate] = useState(() => toDateInputValue(new Date()));
+
+  const roomsQuery = useRooms(ALL_ROOMS);
+  const roomData = roomsQuery.data ?? NO_ROOMS;
+  const floorOptions = useMemo(
+    () => [...new Set(roomData.map((room) => room.location))].sort(),
+    [roomData],
+  );
+  const equipmentOptions = useMemo(
+    () => [...new Set(roomData.flatMap((room) => room.equipment.map((item) => item.name)))].sort(),
+    [roomData],
+  );
+  const visibleRooms = useMemo(
+    () => filterRooms(roomData, appliedFilters),
+    [roomData, appliedFilters],
+  );
+  const pageCount = Math.max(1, Math.ceil(visibleRooms.length / PAGE_SIZE));
+  const currentPage = Math.min(roomPage, pageCount);
+  const paginatedRooms = visibleRooms.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  const scheduleDays = useMemo(
+    () => getScheduleDays(selectedDate, scheduleView),
+    [selectedDate, scheduleView],
+  );
+  const scheduleFilters = useMemo(() => getScheduleFilters(scheduleDays), [scheduleDays]);
+  const scheduleQuery = useReservations(scheduleFilters);
+
+  const reservations = scheduleQuery.data ?? NO_RESERVATIONS;
+  const scheduleError = scheduleQuery.error?.message ?? '';
+
+  return (
+    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <PageHeader
+        eyebrow="Workspace overview"
+        title="Find the right room"
+        description="Meeting room details and scheduled bookings timelines"
+      />
+      <RoomScheduleControls
+        filters={draftFilters}
+        floorOptions={floorOptions}
+        equipmentOptions={equipmentOptions}
+        selectedDate={selectedDate}
+        view={scheduleView}
+        onFiltersChange={setDraftFilters}
+        onApplyFilters={() => {
+          setAppliedFilters(draftFilters);
+          setRoomPage(1);
+        }}
+        onDateChange={setSelectedDate}
+        onViewChange={setScheduleView}
+      />
+      <RoomContent
+        isLoading={roomsQuery.isLoading}
+        error={roomsQuery.error?.message ?? ''}
+        rooms={paginatedRooms}
+        reservations={reservations}
+        scheduleDays={scheduleDays}
+        scheduleView={scheduleView}
+        scheduleLoading={scheduleQuery.isLoading}
+        scheduleError={scheduleError}
+        currentPage={currentPage}
+        totalItems={visibleRooms.length}
+        onPageChange={setRoomPage}
+        onRetryRooms={() => void roomsQuery.refetch()}
+        onRetrySchedule={() => void scheduleQuery.refetch()}
+      />
+      {scheduleQuery.isRefetching ? (
+        <p role="status" className="mt-4 text-sm text-slate-500 dark:text-slate-400">
+          Updating room schedules...
+        </p>
+      ) : null}
+    </main>
+  );
+}

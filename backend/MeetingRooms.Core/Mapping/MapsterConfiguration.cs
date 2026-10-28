@@ -17,13 +17,7 @@ public static class MapsterConfiguration
             destination => destination.Equipment,
             source => source.Equipment
                 .Select(link => new RoomEquipmentDto(link.Equipment.Name, link.Quantity))
-                .ToList())
-        .Map(
-            destination => destination.IsCurrentlyReserved,
-            source => source.Reservations.Any(reservation =>
-                reservation.Status == ReservationStatus.Booked &&
-                reservation.StartDate <= DateTime.UtcNow &&
-                reservation.EndDate > DateTime.UtcNow));
+                .ToList());
 
     config.NewConfig<Reservation, ReservationDto>()
         .Map(destination => destination.RoomName, source => source.Room.Name)

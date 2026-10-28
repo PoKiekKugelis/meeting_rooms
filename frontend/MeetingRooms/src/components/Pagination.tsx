@@ -21,7 +21,6 @@ export function Pagination({
 
   return (
     <nav
-      aria-label="Pagination"
       className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm"
     >
       <p className="text-slate-600 dark:text-slate-300">
@@ -40,7 +39,7 @@ export function Pagination({
         >
           Previous
         </button>
-        <span aria-live="polite" className="whitespace-nowrap text-slate-600 dark:text-slate-300">
+        <span className="whitespace-nowrap text-slate-600 dark:text-slate-300">
           Page {currentPage} of {pageCount}
         </span>
         <button

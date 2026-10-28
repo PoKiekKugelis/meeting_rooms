@@ -6,7 +6,6 @@ public sealed record RoomDto(
     int Capacity,
     string Location,
     string Status,
-    bool IsCurrentlyReserved,
     IReadOnlyCollection<RoomEquipmentDto> Equipment);
 
 public sealed record CreateRoomDto(
