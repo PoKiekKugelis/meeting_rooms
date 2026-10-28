@@ -1,10 +1,8 @@
 import { useMemo, useState } from 'react';
 import { ROOM_STATUS } from '../constants/status';
 import { PAGE_SIZE } from '../constants/pagination';
-import { FeedbackState } from '../components/FeedbackState';
 import { PageHeader } from '../components/PageHeader';
-import { Pagination } from '../components/Pagination';
-import { RoomCard } from '../components/RoomCard';
+import { RoomContent } from '../components/RoomContent';
 import { RoomManagementPanel } from '../components/RoomManagementPanel';
 import { useReservations } from '../hooks/useReservations';
 import { useRooms } from '../hooks/useRooms';
@@ -35,69 +33,6 @@ function filterRooms(rooms: Room[], filters: RoomFiltersValue): Room[] {
           (item) => item.name === name && item.quantity >= minimumQuantity,
         );
       }),
-  );
-}
-
-interface RoomContentProps {
-  isLoading: boolean;
-  error: string;
-  rooms: Room[];
-  reservations: Reservation[];
-  scheduleDays: Date[];
-  scheduleView: ScheduleView;
-  scheduleLoading: boolean;
-  scheduleError: string;
-  currentPage: number;
-  totalItems: number;
-  onPageChange: (page: number) => void;
-  onRetryRooms: () => void;
-  onRetrySchedule: () => void;
-}
-
-function RoomContent({
-  isLoading,
-  error,
-  rooms,
-  reservations,
-  scheduleDays,
-  scheduleView,
-  scheduleLoading,
-  scheduleError,
-  currentPage,
-  totalItems,
-  onPageChange,
-  onRetryRooms,
-  onRetrySchedule,
-}: RoomContentProps) {
-  if (isLoading) return <FeedbackState message="Loading rooms..." />;
-  if (error) {
-    return <FeedbackState message={error} actionLabel="Try again" onAction={onRetryRooms} />;
-  }
-  if (rooms.length === 0) return <FeedbackState message="No rooms match your filters." />;
-
-  return (
-    <div>
-      <div className="grid gap-5 xl:grid-cols-3">
-        {rooms.map((room) => (
-          <RoomCard
-            key={room.id}
-            room={room}
-            reservations={reservations}
-            scheduleDays={scheduleDays}
-            scheduleView={scheduleView}
-            scheduleLoading={scheduleLoading}
-            scheduleError={scheduleError}
-            onRetrySchedule={onRetrySchedule}
-          />
-        ))}
-      </div>
-      <Pagination
-        currentPage={currentPage}
-        pageSize={PAGE_SIZE}
-        totalItems={totalItems}
-        onPageChange={onPageChange}
-      />
-    </div>
   );
 }
 
